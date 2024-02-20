@@ -1,0 +1,61 @@
+	package Exceptions;
+	
+	public class Konto {
+		
+		private Person inhaber;
+		private double guthaben;
+		
+		public Konto(Person inhaber) {
+			this.inhaber = inhaber;
+			this.guthaben = 0.0;
+		}
+	
+		public Person getInhaber() {
+			return inhaber;
+		}
+	
+		public void setInhaber(Person inhaber) {
+			this.inhaber = inhaber;
+		}
+	
+		public double getGuthaben() {
+			return guthaben;
+		}
+	
+		public void einzahlen(double betrag) {
+			this.guthaben += betrag;
+		}
+		
+		public void abheben(double betrag) {
+			if(betrag > guthaben){
+				throw new IllegalArgumentException("Nicht genug guthaben");
+			} else {
+				guthaben -= betrag;
+			}
+		}
+	
+		public String toString() {
+			return "Konto [inhaber=" + inhaber.toString() + ", guthaben=" + guthaben + "]";
+		}
+		
+		public static void main(String[] args) {
+			Person p1 = new Person("Simon", "Hecke", "Krauthöfe 14, Weißenborn");
+			System.out.println("P1: " + p1);
+			
+			Konto k1 = new Konto(p1);
+			System.out.println("Konto 1: " + k1);
+			
+			k1.einzahlen(100.0);
+			System.out.println("Guthaben: " + k1);
+			
+			try{
+				k1.abheben(10);
+				System.out.println("Guthaben: " + k1);
+				k1.abheben(200);
+			} catch (IllegalArgumentException e) {
+				System.out.println("Error: " + e.getMessage());
+			}
+		}
+		
+	
+	}

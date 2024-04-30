@@ -7,7 +7,7 @@ public class SlotGame extends JFrame {
     private final int WIDTH = 600;
     private final int HEIGHT = 400;
     private JButton spinButton;
-    private JButton manualSpinButton; // Neuer Button für manuellen Spin
+    private JButton manualSpinButton; 
     private JLabel[] reels;
     private ImageIcon[] symbols;
 
@@ -38,31 +38,37 @@ public class SlotGame extends JFrame {
         // Spin button
         spinButton = new JButton("Spin");
         spinButton.addActionListener(new SpinListener());
-        add(spinButton, BorderLayout.SOUTH);
 
         // Manual spin button
         manualSpinButton = new JButton("Manual Spin");
         manualSpinButton.addActionListener(new SpinListener()); // Verwendet denselben Listener wie Spin Button
-        add(manualSpinButton, BorderLayout.NORTH);
 
-        // Layout reels horizontally
+        // Layout
         GroupLayout layout = new GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setAutoCreateGaps(true);
         layout.setAutoCreateContainerGaps(true);
 
         layout.setHorizontalGroup(
-                layout.createSequentialGroup()
-                        .addComponent(reels[0])
-                        .addComponent(reels[1])
-                        .addComponent(reels[2])
+                layout.createParallelGroup(GroupLayout.Alignment.CENTER)
+                        .addGroup(layout.createSequentialGroup()
+                                .addComponent(reels[0])
+                                .addComponent(reels[1])
+                                .addComponent(reels[2]))
+                        .addGroup(layout.createSequentialGroup()
+                                .addComponent(spinButton)
+                                .addComponent(manualSpinButton))
         );
 
         layout.setVerticalGroup(
-                layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                        .addComponent(reels[0])
-                        .addComponent(reels[1])
-                        .addComponent(reels[2])
+                layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                                .addComponent(reels[0])
+                                .addComponent(reels[1])
+                                .addComponent(reels[2]))
+                        .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                                .addComponent(spinButton)
+                                .addComponent(manualSpinButton))
         );
 
         pack();

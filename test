@@ -1,44 +1,80 @@
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
-public class CasinoMainScreen extends JFrame {
-    private JLabel titleLabel;
-    private JButton playButton;
-    private JButton exitButton;
+public class SlotGame extends JFrame {
+    private final int WIDTH = 600;
+    private final int HEIGHT = 400;
+    private JButton spinButton;
+    private JLabel[] reels;
+    private ImageIcon[] symbols;
 
-    public CasinoMainScreen() {
-        setTitle("Casino Spiel");
-        setSize(400, 300);
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
-        setLocationRelativeTo(null);
+    public SlotGame() {
+        setTitle("Slot Game");
+        setSize(WIDTH, HEIGHT);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setResizable(false);
 
-        titleLabel = new JLabel("Willkommen im Casino!");
-        titleLabel.setFont(new Font("Arial", Font.BOLD, 20));
-        titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        add(titleLabel, BorderLayout.NORTH);
+        // Load symbols
+        symbols = new ImageIcon[]{
+                new ImageIcon("path_to_symbol1_image.jpg"),
+                new ImageIcon("path_to_symbol2_image.jpg"),
+                new ImageIcon("path_to_symbol3_image.jpg")
+        };
 
-        JPanel buttonPanel = new JPanel();
-        playButton = new JButton("Spielen");
-        exitButton = new JButton("Beenden");
-        buttonPanel.add(playButton);
-        buttonPanel.add(exitButton);
-        add(buttonPanel, BorderLayout.CENTER);
+        // Set background
+        getContentPane().setBackground(Color.BLACK);
 
-        playButton.addActionListener(e -> {
-            // Hier kann die Logik für das Spiel gestartet werden
-            JOptionPane.showMessageDialog(this, "Spiel wird gestartet!");
-        });
+        // Initialize reels
+        reels = new JLabel[3];
+        for (int i = 0; i < reels.length; i++) {
+            reels[i] = new JLabel();
+            reels[i].setIcon(symbols[0]); // Initial symbol
+            add(reels[i]);
+        }
 
-        exitButton.addActionListener(e -> {
-            // Hier kann die Logik für das Beenden des Spiels implementiert werden
-            System.exit(0);
-        });
+        // Spin button
+        spinButton = new JButton("Spin");
+        spinButton.addActionListener(new SpinListener());
+        add(spinButton, BorderLayout.SOUTH);
+
+        // Layout reels horizontally
+        GroupLayout layout = new GroupLayout(getContentPane());
+        getContentPane().setLayout(layout);
+        layout.setAutoCreateGaps(true);
+        layout.setAutoCreateContainerGaps(true);
+
+        layout.setHorizontalGroup(
+                layout.createSequentialGroup()
+                        .addComponent(reels[0])
+                        .addComponent(reels[1])
+                        .addComponent(reels[2])
+        );
+
+        layout.setVerticalGroup(
+                layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                        .addComponent(reels[0])
+                        .addComponent(reels[1])
+                        .addComponent(reels[2])
+        );
+
+        pack();
+        setVisible(true);
+    }
+
+    private class SpinListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            // Simulate spinning
+            for (JLabel reel : reels) {
+                int randomSymbol = (int) (Math.random() * symbols.length);
+                reel.setIcon(symbols[randomSymbol]);
+            }
+        }
     }
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            CasinoMainScreen mainScreen = new CasinoMainScreen();
-            mainScreen.setVisible(true);
-        });
+        SwingUtilities.invokeLater(SlotGame::new);
     }
 }

@@ -7,6 +7,7 @@ public class SlotGame extends JFrame {
     private final int WIDTH = 600;
     private final int HEIGHT = 400;
     private JButton spinButton;
+    private JButton manualSpinButton; // Neuer Button für manuellen Spin
     private JLabel[] reels;
     private ImageIcon[] symbols;
 
@@ -38,6 +39,11 @@ public class SlotGame extends JFrame {
         spinButton = new JButton("Spin");
         spinButton.addActionListener(new SpinListener());
         add(spinButton, BorderLayout.SOUTH);
+
+        // Manual spin button
+        manualSpinButton = new JButton("Manual Spin");
+        manualSpinButton.addActionListener(new SpinListener()); // Verwendet denselben Listener wie Spin Button
+        add(manualSpinButton, BorderLayout.NORTH);
 
         // Layout reels horizontally
         GroupLayout layout = new GroupLayout(getContentPane());

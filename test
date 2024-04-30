@@ -1,61 +1,44 @@
-	package Exceptions;
-	
-	public class Konto {
-		
-		private Person inhaber;
-		private double guthaben;
-		
-		public Konto(Person inhaber) {
-			this.inhaber = inhaber;
-			this.guthaben = 0.0;
-		}
-	
-		public Person getInhaber() {
-			return inhaber;
-		}
-	
-		public void setInhaber(Person inhaber) {
-			this.inhaber = inhaber;
-		}
-	
-		public double getGuthaben() {
-			return guthaben;
-		}
-	
-		public void einzahlen(double betrag) {
-			this.guthaben += betrag;
-		}
-		
-		public void abheben(double betrag) {
-			if(betrag > guthaben){
-				throw new IllegalArgumentException("Nicht genug guthaben");
-			} else {
-				guthaben -= betrag;
-			}
-		}
-	
-		public String toString() {
-			return "Konto [inhaber=" + inhaber.toString() + ", guthaben=" + guthaben + "]";
-		}
-		
-		public static void main(String[] args) {
-			Person p1 = new Person("Simon", "Hecke", "Krauthöfe 14, Weißenborn");
-			System.out.println("P1: " + p1);
-			
-			Konto k1 = new Konto(p1);
-			System.out.println("Konto 1: " + k1);
-			
-			k1.einzahlen(100.0);
-			System.out.println("Guthaben: " + k1);
-			
-			try{
-				k1.abheben(10);
-				System.out.println("Guthaben: " + k1);
-				k1.abheben(200);
-			} catch (IllegalArgumentException e) {
-				System.out.println("Error: " + e.getMessage());
-			}
-		}
-		
-	
-	}
+import javax.swing.*;
+import java.awt.*;
+
+public class CasinoMainScreen extends JFrame {
+    private JLabel titleLabel;
+    private JButton playButton;
+    private JButton exitButton;
+
+    public CasinoMainScreen() {
+        setTitle("Casino Spiel");
+        setSize(400, 300);
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setLocationRelativeTo(null);
+
+        titleLabel = new JLabel("Willkommen im Casino!");
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 20));
+        titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        add(titleLabel, BorderLayout.NORTH);
+
+        JPanel buttonPanel = new JPanel();
+        playButton = new JButton("Spielen");
+        exitButton = new JButton("Beenden");
+        buttonPanel.add(playButton);
+        buttonPanel.add(exitButton);
+        add(buttonPanel, BorderLayout.CENTER);
+
+        playButton.addActionListener(e -> {
+            // Hier kann die Logik für das Spiel gestartet werden
+            JOptionPane.showMessageDialog(this, "Spiel wird gestartet!");
+        });
+
+        exitButton.addActionListener(e -> {
+            // Hier kann die Logik für das Beenden des Spiels implementiert werden
+            System.exit(0);
+        });
+    }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> {
+            CasinoMainScreen mainScreen = new CasinoMainScreen();
+            mainScreen.setVisible(true);
+        });
+    }
+}

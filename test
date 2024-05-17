@@ -1,92 +1,34 @@
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+org 100h
 
-public class SlotGame extends JFrame {
-    private final int WIDTH = 600;
-    private final int HEIGHT = 400;
-    private JButton spinButton;
-    private JButton manualSpinButton; 
-    private JLabel[] reels;
-    private ImageIcon[] symbols;
+mov dl, 48
+mov ah, 2h
 
-    public SlotGame() {
-        setTitle("Slot Game");
-        setSize(WIDTH, HEIGHT);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setResizable(false);
+print_loop:
+    cmp dl, 57
+    ja check_uppercase
 
-        // Load symbols
-        symbols = new ImageIcon[]{
-                new ImageIcon("path_to_symbol1_image.jpg"),
-                new ImageIcon("path_to_symbol2_image.jpg"),
-                new ImageIcon("path_to_symbol3_image.jpg")
-        };
+print_char:
+    int 21h
+    jmp increment_char
 
-        // Set background
-        getContentPane().setBackground(Color.BLACK);
+check_uppercase:
+    cmp dl, 65
+    jb increment_char
+    cmp dl, 90
+    ja check_lowercase
+    jmp print_char
 
-        // Initialize reels
-        reels = new JLabel[3];
-        for (int i = 0; i < reels.length; i++) {
-            reels[i] = new JLabel();
-            reels[i].setIcon(symbols[0]); // Initial symbol
-            add(reels[i]);
-        }
+check_lowercase:
+    cmp dl, 97
+    jb increment_char
+    cmp dl, 122
+    ja increment_char
+    jmp print_char
 
-        // Spin button
-        spinButton = new JButton("Spin");
-        spinButton.addActionListener(new SpinListener());
+increment_char:
+    inc dl
+    cmp dl, 123
+    jb print_loop
 
-        // Manual spin button
-        manualSpinButton = new JButton("Manual Spin");
-        manualSpinButton.addActionListener(new SpinListener()); // Verwendet denselben Listener wie Spin Button
-
-        // Layout
-        GroupLayout layout = new GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setAutoCreateGaps(true);
-        layout.setAutoCreateContainerGaps(true);
-
-        layout.setHorizontalGroup(
-                layout.createParallelGroup(GroupLayout.Alignment.CENTER)
-                        .addGroup(layout.createSequentialGroup()
-                                .addComponent(reels[0])
-                                .addComponent(reels[1])
-                                .addComponent(reels[2]))
-                        .addGroup(layout.createSequentialGroup()
-                                .addComponent(spinButton)
-                                .addComponent(manualSpinButton))
-        );
-
-        layout.setVerticalGroup(
-                layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                                .addComponent(reels[0])
-                                .addComponent(reels[1])
-                                .addComponent(reels[2]))
-                        .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                                .addComponent(spinButton)
-                                .addComponent(manualSpinButton))
-        );
-
-        pack();
-        setVisible(true);
-    }
-
-    private class SpinListener implements ActionListener {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            // Simulate spinning
-            for (JLabel reel : reels) {
-                int randomSymbol = (int) (Math.random() * symbols.length);
-                reel.setIcon(symbols[randomSymbol]);
-            }
-        }
-    }
-
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(SlotGame::new);
-    }
-}
+end_print:
+ret

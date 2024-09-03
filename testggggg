@@ -1,113 +1,56 @@
-package Window;
-
-import javax.imageio.ImageIO;
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.image.BufferedImage;
+import javax.sound.sampled.*;
+import java.io.File;
 import java.io.IOException;
-import java.net.URL;
 
-public class Test extends JFrame{
-	
-	public Test() {
-		setTitle("Casino - Hauptmenü");
-		setSize(600, 300);
-		setResizable(false);
-		setLocationRelativeTo(null);
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+public class SoundPlayer {
+    private Clip audioClip;
 
-		try {
-			URL iconUrl = new URL("https://bennyyn.xyz/upload/images/icon.png");
-			BufferedImage iconImage = ImageIO.read(iconUrl);
-			setIconImage(iconImage);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+    public SoundPlayer(String soundFileName) {
+        try {
+            // Pfad zur WAV-Datei
+            File soundFile = new File(soundFileName);
 
-		try {
-			URL imageUrl = new URL("https://bennyyn.xyz/upload/images/background.png");
-			BufferedImage backgroundImage = ImageIO.read(imageUrl);
-			setContentPane(new JLabel(new ImageIcon(backgroundImage)));
-		} catch (IOException e) {
-			e.printStackTrace();
-			getContentPane().setBackground(Color.BLACK);
-		}
+            // AudioInputStream erstellen
+            AudioInputStream audioStream = AudioSystem.getAudioInputStream(soundFile);
 
-		setLayout(new BorderLayout());
+            // Audioformat und Datenline abrufen
+            AudioFormat format = audioStream.getFormat();
+            DataLine.Info info = new DataLine.Info(Clip.class, format);
 
-		JPanel contentPanel = new JPanel(new BorderLayout());
-		contentPanel.setOpaque(false);
+            // Clip erstellen und öffnen
+            audioClip = (Clip) AudioSystem.getLine(info);
+            audioClip.open(audioStream);
 
-		JLabel bigTextLabel = new JLabel("Casino");
-		bigTextLabel.setFont(new Font("Arial", Font.BOLD, 30));
-		bigTextLabel.setForeground(Color.WHITE);
-		bigTextLabel.setHorizontalAlignment(SwingConstants.CENTER);
-		contentPanel.add(bigTextLabel, BorderLayout.CENTER);
+        } catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
+            e.printStackTrace();
+        }
+    }
 
-		JPanel buttonPanel = new JPanel(new GridLayout(3, 1, 0, 1));
-		buttonPanel.setOpaque(false);
+    public void play() {
+        if (audioClip != null) {
+            // Sound abspielen
+            audioClip.start();
 
+            // Warten bis der Sound endet
+            try {
+                while (!audioClip.isRunning()) {
+                    Thread.sleep(10);
+                }
+                while (audioClip.isRunning()) {
+                    Thread.sleep(10);
+                }
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
 
+            // Ressourcen freigeben
+            audioClip.close();
+        }
+    }
 
-		JButton blackjackButton = new JButton("Blackjack");
-		blackjackButton.setFont(new Font("Arial", Font.BOLD, 14));
-		blackjackButton.setForeground(Color.YELLOW);
-		blackjackButton.setBackground(Color.DARK_GRAY);
-		blackjackButton.setFocusable(false);
-		blackjackButton.setFocusPainted(false);
-		blackjackButton.setBorderPainted(false);
-
-		JButton quitButton = new JButton("Quit");
-		quitButton.setFont(new Font("Arial", Font.BOLD, 14));
-		quitButton.setForeground(Color.YELLOW);
-		quitButton.setBackground(Color.DARK_GRAY);
-		quitButton.setFocusable(false);
-		quitButton.setFocusPainted(false);
-		quitButton.setBorderPainted(false);
-		quitButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				dispose();
-			}
-		});
-
-		JPanel slotsButtonPanel = new JPanel(new FlowLayout());
-		slotsButtonPanel.setOpaque(false);
-
-		JPanel blackjackButtonPanel = new JPanel(new FlowLayout());
-		blackjackButtonPanel.setOpaque(false);
-		blackjackButtonPanel.add(blackjackButton);
-
-		JPanel quitButtonPanel = new JPanel(new FlowLayout());
-		quitButtonPanel.setOpaque(false);
-		quitButtonPanel.add(quitButton);
-
-		buttonPanel.add(slotsButtonPanel);
-		buttonPanel.add(blackjackButtonPanel);
-		buttonPanel.add(quitButtonPanel);
-
-		contentPanel.add(buttonPanel, BorderLayout.SOUTH);
-
-		JLabel bottomLeftTextLabel = new JLabel("by Alex, Ben & Henrik");
-		bottomLeftTextLabel.setFont(new Font("Arial", Font.PLAIN, 12));
-		bottomLeftTextLabel.setForeground(Color.WHITE);
-		bottomLeftTextLabel.setHorizontalAlignment(SwingConstants.RIGHT);
-		JPanel bottomLeftPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-		bottomLeftPanel.setOpaque(false);
-		bottomLeftPanel.add(bottomLeftTextLabel);
-		contentPanel.add(bottomLeftPanel, BorderLayout.NORTH);
-
-		add(contentPanel, BorderLayout.CENTER);
-		add(buttonPanel, BorderLayout.SOUTH);
-
-		setVisible(true);
-
-	}
-	
-	public static void main(String[] args) {
-		new Test();
-	}
-	
+    public static void main(String[] args) {
+        // Erstelle ein SoundPlayer-Objekt und spiele den Sound ab
+        SoundPlayer player = new SoundPlayer("your_sound_file.wav");
+        player.play();
+    }
 }

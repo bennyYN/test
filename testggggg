@@ -1,22 +1,33 @@
-import java.io.*;
-import java.net.*;
+package echoserverneu1vereinfacht;
 
-public class EchoClient {
+import java.io.IOException;
+
+public class EchoServer {
     public static void main(String[] args) {
-        try (Socket socket = new Socket("localhost", 12345)) {
-            // Eingabe- und Ausgabestreams initialisieren
-            BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
-            BufferedReader stdIn = new BufferedReader(new InputStreamReader(System.in));
+        int port = 12345; // Der Port, auf dem der Server läuft
 
-            String userInput;
-            System.out.println("Gib ein Wort ein: ");
-            while ((userInput = stdIn.readLine()) != null) {
-                out.println(userInput); // Wort an den Server senden
-                System.out.println("Echo vom Server: " + in.readLine()); // Antwort vom Server empfangen
+        try {
+            // ServerSocket erstellen, der auf Verbindungen horcht
+            ServerSocket serverSocket = new ServerSocket(port);
+            System.out.println("Server läuft auf Port " + port + " und wartet auf Verbindungen...");
+
+            while (true) {
+                // Warte auf eine Verbindungsanforderung von einem Client
+                Socket clientSocket = serverSocket.accept();
+                System.out.println("Verbindung von einem Client akzeptiert.");
+
+                // Eingabe und Ausgabe für den Client vorbereiten
+                String inputLine;
+                while ((inputLine = clientSocket.readLine()) != null) {
+                    System.out.println("Empfangen: " + inputLine);
+                    clientSocket.write(inputLine); // Echo zurück an den Client
+                }
+
+                // Verbindung schließen
+                clientSocket.close();
             }
         } catch (IOException e) {
-            System.out.println("Fehler im Client: " + e.getMessage());
+            System.out.println("Fehler im Server: " + e.getMessage());
         }
     }
 }

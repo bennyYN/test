@@ -1,33 +1,45 @@
 package echoserverneu1vereinfacht;
 
 import java.io.IOException;
+import java.util.Scanner;
 
-public class EchoServer {
+public class EchoClient {
     public static void main(String[] args) {
-        int port = 12345; // Der Port, auf dem der Server läuft
+        String hostname = "localhost"; // Server-Adresse (localhost für lokalen Test)
+        int port = 12345; // Der Port des Servers
 
         try {
-            // ServerSocket erstellen, der auf Verbindungen horcht
-            ServerSocket serverSocket = new ServerSocket(port);
-            System.out.println("Server läuft auf Port " + port + " und wartet auf Verbindungen...");
+            // Erstelle einen neuen Socket und verbinde mit dem Server
+            Socket clientSocket = new Socket(hostname, port);
+            if (clientSocket.connect()) {
+                System.out.println("Verbindung zum Server hergestellt.");
 
-            while (true) {
-                // Warte auf eine Verbindungsanforderung von einem Client
-                Socket clientSocket = serverSocket.accept();
-                System.out.println("Verbindung von einem Client akzeptiert.");
+                // Begrüßungsnachricht vom Server empfangen
+                String welcomeMessage = clientSocket.readLine();
+                System.out.println("Server: " + welcomeMessage);
 
-                // Eingabe und Ausgabe für den Client vorbereiten
-                String inputLine;
-                while ((inputLine = clientSocket.readLine()) != null) {
-                    System.out.println("Empfangen: " + inputLine);
-                    clientSocket.write(inputLine); // Echo zurück an den Client
+                // Eingabe über Scanner lesen
+                Scanner scanner = new Scanner(System.in);
+                String userInput;
+
+                System.out.println("Gib ein Wort ein (zum Beenden 'exit'): ");
+                while (!(userInput = scanner.nextLine()).equals("exit")) {
+                    // Sende das Wort an den Server
+                    clientSocket.write(userInput);
+
+                    // Empfange die Antwort (Echo) vom Server
+                    String response = clientSocket.readLine();
+                    System.out.println("Server: " + response);
                 }
 
-                // Verbindung schließen
+                // Schließe den Socket
                 clientSocket.close();
+                System.out.println("Verbindung geschlossen.");
+            } else {
+                System.out.println("Verbindung zum Server fehlgeschlagen.");
             }
         } catch (IOException e) {
-            System.out.println("Fehler im Server: " + e.getMessage());
+            System.out.println("Fehler im Client: " + e.getMessage());
         }
     }
 }

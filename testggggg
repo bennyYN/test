@@ -1,56 +1,22 @@
-import javax.sound.sampled.*;
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
+import java.net.*;
 
-public class SoundPlayer {
-    private Clip audioClip;
-
-    public SoundPlayer(String soundFileName) {
-        try {
-            // Pfad zur WAV-Datei
-            File soundFile = new File(soundFileName);
-
-            // AudioInputStream erstellen
-            AudioInputStream audioStream = AudioSystem.getAudioInputStream(soundFile);
-
-            // Audioformat und Datenline abrufen
-            AudioFormat format = audioStream.getFormat();
-            DataLine.Info info = new DataLine.Info(Clip.class, format);
-
-            // Clip erstellen und öffnen
-            audioClip = (Clip) AudioSystem.getLine(info);
-            audioClip.open(audioStream);
-
-        } catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void play() {
-        if (audioClip != null) {
-            // Sound abspielen
-            audioClip.start();
-
-            // Warten bis der Sound endet
-            try {
-                while (!audioClip.isRunning()) {
-                    Thread.sleep(10);
-                }
-                while (audioClip.isRunning()) {
-                    Thread.sleep(10);
-                }
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-
-            // Ressourcen freigeben
-            audioClip.close();
-        }
-    }
-
+public class EchoClient {
     public static void main(String[] args) {
-        // Erstelle ein SoundPlayer-Objekt und spiele den Sound ab
-        SoundPlayer player = new SoundPlayer("your_sound_file.wav");
-        player.play();
+        try (Socket socket = new Socket("localhost", 12345)) {
+            // Eingabe- und Ausgabestreams initialisieren
+            BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+            BufferedReader stdIn = new BufferedReader(new InputStreamReader(System.in));
+
+            String userInput;
+            System.out.println("Gib ein Wort ein: ");
+            while ((userInput = stdIn.readLine()) != null) {
+                out.println(userInput); // Wort an den Server senden
+                System.out.println("Echo vom Server: " + in.readLine()); // Antwort vom Server empfangen
+            }
+        } catch (IOException e) {
+            System.out.println("Fehler im Client: " + e.getMessage());
+        }
     }
 }
